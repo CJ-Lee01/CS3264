@@ -48,18 +48,15 @@ def get_multilingual_dataset():
     english_train = english_train[['text', 'label']]
     
     #balance the test dataset
-    modern_dataset = load_dataset("newsmediabias/fake_news_elections_labelled_data")["train"].to_pandas()
-    modern_true_df = modern_dataset[modern_dataset['label'] == 'REAL']
-    modern_false_df = modern_dataset[modern_dataset['label'] == 'FAKE']
+    modern_dataset = pd.read_csv(os.path.join(data_dir, 'FineFake.csv'))
+    #split the dataset into half
+    english_test = modern_dataset.sample(frac=0.5, random_state=42).copy()
+    #put remianing data into val
+    english_val = modern_dataset.drop(english_test.index)
+    print("english test set size: ", len(english_test))
+    print("english val set size: ", len(english_val))
 
-    english_test = pd.concat([modern_true_df.sample(1000), modern_false_df.sample(1000)], ignore_index=True)
-    english_test['label'] = english_test['label'].apply(lambda x: 0 if x == 'REAL' else 1)
-    english_test = english_test[english_test['text'].notna()]
     english_test = english_test[['text', 'label']]
-
-    english_val = pd.concat([modern_true_df.sample(1000), modern_false_df.sample(1000)], ignore_index=True)
-    english_val['label'] = english_val['label'].apply(lambda x: 0 if x == 'REAL' else 1)
-    english_val = english_val[english_val['text'].notna()]
     english_val = english_val[['text', 'label']]
 
     chinese_news_df = pd.read_csv(os.path.join(data_dir, 'mcfend.csv'))
@@ -96,4 +93,4 @@ def get_multilingual_dataset():
     print("test set size: ", len(merged_test))
     print("val set size: ", len(merged_val))
 
-    return english_train, english_test, english_val
+    return merged_train, merged_test, merged_val
