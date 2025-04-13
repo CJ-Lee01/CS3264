@@ -14,6 +14,18 @@ Unless for a specific reason, the implementation of providing a dataset should p
    - src: https://huggingface.co/datasets/Hasib18/fake-news-dataset
    - function: dataloading.get_hasib18_fns
    - keyword argument: include_instruction(default false)
+  
+2. FineFake : A Knowledge-Enriched Dataset for Fine-Grained Multi-Domain Fake News Detection
+   - src: https://github.com/Accuser907/FineFake?tab=readme-ov-file
+   - function: dataloading.get_multilingual_dataset
+  
+3. MCFEND: A Multi-source Benchmark Dataset for Chinese Fake News Detection
+   - src: https://trustworthycomp.github.io/mcfend/
+   - function: dataloading.get_multilingual_dataset
+
+4. Kaggle fake-and-real-news-dataset
+   - src: https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset
+   - function: dataloading.get_multilingual_dataset
 
 ## Dependencies
 ### Datasets
