@@ -2,6 +2,7 @@ from datasets import load_dataset
 import pandas as pd
 import pickle
 import os
+from datetime import datetime
 
 def get_hasib18_fns(*, include_instruction=False):
     # https://huggingface.co/datasets/Hasib18/fake-news-dataset
@@ -94,3 +95,42 @@ def get_multilingual_dataset():
     print("val set size: ", len(merged_val))
 
     return merged_train, merged_test, merged_val
+
+def parse_date_safe(x):
+    return datetime.strptime(x.strip(), '%B %d, %Y')
+
+def get_timedsplit_dataset():
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+
+    english_train_true = pd.read_csv(os.path.join(data_dir, 'True.csv'))
+    english_train_true['label'] = 0
+    english_train_fake = pd.read_csv(os.path.join(data_dir, 'Fake.csv'))
+    english_train_fake['label'] = 1
+    
+    #merge the two dataframes
+    english_train = pd.concat([english_train_true, english_train_fake], ignore_index=True)
+    cleaned_df = english_train[english_train['text'].notna()]
+
+    train_end_date = '2017-09-22'
+    val_end_date = '2017-11-15'
+    
+    
+    cleaned_df['date'] = pd.to_datetime(cleaned_df['date'].str.strip(), format='mixed', errors='coerce')
+
+    cleaned_df = cleaned_df[cleaned_df['date'].notna()]
+
+    
+    
+
+    train_set = cleaned_df[cleaned_df['date'] < train_end_date].copy()
+    val_set = cleaned_df[(cleaned_df['date'] >= train_end_date) & (cleaned_df['date'] < val_end_date)].copy()
+    test_set = cleaned_df[cleaned_df['date'] >= val_end_date].copy()
+    print("train set size: ", len(train_set))
+    print("test set size: ", len(test_set))
+    print("val set size: ", len(val_set))
+
+    return train_set, test_set, val_set
+
+
+
+
